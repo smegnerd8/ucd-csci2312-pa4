@@ -1,8 +1,6 @@
 
 
 //  Drew Smegner
-
-
 #include "Game.h"
 #include "Piece.h"
 #include "Simple.h"
@@ -27,7 +25,6 @@ namespace Gaming
     {
         std::default_random_engine gen;
         std::uniform_int_distribution<int> d(0, __width * __height);
-
         __numInitAgents = (__width * __height) / NUM_INIT_AGENT_FACTOR;
         __numInitResources = (__width * __height) / NUM_INIT_RESOURCE_FACTOR;
 
@@ -80,9 +77,6 @@ namespace Gaming
 
     }
 
-
-
-
     Game::Game(unsigned width, unsigned height, bool manual) :
             __grid(width*height,nullptr),
             __round(0),
@@ -102,21 +96,11 @@ namespace Gaming
     Game::Game() : Game(3,3)
     { }
     Game::~Game()
-    {
-
-    }
+    { }
     Game::Game(const Game &another)
     {
         std::vector<Piece *> *vecPtr = new std::vector<Piece *>(another.__width * another.__height);
-
-
-
-        __width = another.__width;
-        __height = another.__height;
-        __round = another.__round;
-        __status = another.__status;
-        __verbose = another.__verbose;
-
+        __width = another.__width;__height = another.__height;__round = another.__round;__status = another.__status;__verbose = another.__verbose;
         __grid = *vecPtr;
 
         delete vecPtr;
@@ -125,25 +109,17 @@ namespace Gaming
     unsigned int Game::getNumPieces() const
     {
         unsigned int numPieces = (getNumResources() + getNumAgents());
-
-
-        return numPieces;
-    }
+        return numPieces; }
 
     unsigned int Game::getNumAgents() const
     {
         unsigned int numAgents = (getNumSimple() + getNumStrategic());
-
-
-        return numAgents;
-    }
+        return numAgents; }
 
 
     unsigned int Game::getNumSimple() const
     {
         unsigned int numAgents = 0; std::vector<Piece*>::const_iterator it;
-
-
         for ( it = __grid.begin(); it != __grid.end(); ++it)
         {
             Agent *agent = dynamic_cast<Simple*>(*it);
@@ -156,8 +132,6 @@ namespace Gaming
     unsigned int Game::getNumStrategic() const
     {
         unsigned int numAgents = 0; std::vector<Piece*>::const_iterator it;
-
-
         for ( it = __grid.begin(); it != __grid.end(); ++it)
         {
             Agent *agent = dynamic_cast<Strategic*>(*it);
@@ -170,30 +144,22 @@ namespace Gaming
     unsigned int Game::getNumResources() const
     {
         unsigned int numResources = 0;
-
         for (auto it = __grid.begin(); it != __grid.end(); ++it)
         {
             Piece *Piece = dynamic_cast<Resource*>(*it);
             if (Piece) numResources ++;
         }
-
         return numResources;
     }
 
-    const Piece *Game::getPiece(unsigned int x, unsigned int y) const
-    {
+    const Piece *Game::getPiece(unsigned int x, unsigned int y) const {
+        int place = x * __width + y;
 
-        int place = x *__width +y;
+        if (y >= __width || x >= __height)throw OutOfBoundsEx(__width, __height, x, y);
 
-        if (y >= __width || x >= __height)
-            throw OutOfBoundsEx(__width, __height, x, y);
-
-        if (__grid[place] == nullptr)
-            throw PositionEmptyEx(x, y);
+        if (__grid[place] == nullptr) throw PositionEmptyEx(x, y);
 
         return __grid[place];
-
-
     }
 
     void Game::addSimple(const Position &position)
@@ -216,11 +182,9 @@ namespace Gaming
 
         int place = position.y + position.x * __width;
 
-        if (position.y >= __width || position.x >= __height)
-            throw OutOfBoundsEx(__width, __height, position.x, position.y);
+        if (position.y >= __width || position.x >= __height)throw OutOfBoundsEx(__width, __height, position.x, position.y);
 
-        if (__grid[place])
-            throw PositionNonemptyEx(position.x, position.y);
+        if (__grid[place])throw PositionNonemptyEx(position.x, position.y);
 
         __grid[place] = new Simple(*this, position, energy);
     }
@@ -245,11 +209,9 @@ namespace Gaming
     {
         int place = y + x * __width;
 
-        if (y >= __width || x >= __height)
-            throw OutOfBoundsEx(__width, __height, x, y);
+        if (y >= __width || x >= __height)throw OutOfBoundsEx(__width, __height, x, y);
 
-        if (__grid[place])
-            throw PositionNonemptyEx(x, y);
+        if (__grid[place])throw PositionNonemptyEx(x, y);
 
         __grid[place] = new Simple(*this, Position(x, y), energy);
     }
@@ -258,11 +220,9 @@ namespace Gaming
     {
         int place = position.y + position.x * __width;
 
-        if (position.y >= __width || position.x >= __height)
-            throw OutOfBoundsEx(__width, __height, position.x, position.y);
+        if (position.y >= __width || position.x >= __height)throw OutOfBoundsEx(__width, __height, position.x, position.y);
 
-        if (__grid[place])
-            throw PositionNonemptyEx(position.x, position.y);
+        if (__grid[place])throw PositionNonemptyEx(position.x, position.y);
 
         __grid[place] = new Strategic(*this, position, STARTING_AGENT_ENERGY, s);
     }
@@ -271,11 +231,9 @@ namespace Gaming
     {
         int place = y + x * __width;
 
-        if (y >= __width || x >= __height)
-            throw OutOfBoundsEx(__width, __height, x, y);
+        if (y >= __width || x >= __height)throw OutOfBoundsEx(__width, __height, x, y);
 
-        if (__grid[place])
-            throw PositionNonemptyEx(x, y);
+        if (__grid[place])throw PositionNonemptyEx(x, y);
 
         __grid[place] = new Strategic(*this, Position(x, y), STARTING_AGENT_ENERGY, s);
     }
@@ -297,15 +255,12 @@ namespace Gaming
     void Game::addFood(unsigned x, unsigned y)
     {
         if ((__grid[x * __width + y]) != nullptr)
-        {
-
-        }
+        { }
         else
         {
             Position pos(x,y);
             Food *foodPtr = new Food(*this, pos, STARTING_RESOURCE_CAPACITY);
             __grid[x * __width + y] = foodPtr;
-
         }
     }
 
@@ -313,28 +268,21 @@ namespace Gaming
     {
 
         if ((__grid[position.x * __width + position.y]) != nullptr)
-                {
-
-                                }
+                { }
                 else
                 {
                             Advantage *advPtr = new Advantage(*this, position, STARTING_RESOURCE_CAPACITY);
                             __grid[position.x * __width + position.y] = advPtr;
-
-
-                        }
-
+                }
     }
 
     void Game::addAdvantage(unsigned x, unsigned y)
     {
         int place = y + (x * __width);
 
-        if (y >= __width || x >= __height)
-            throw OutOfBoundsEx(__width, __height, x, y);
+        if (y >= __width || x >= __height)throw OutOfBoundsEx(__width, __height, x, y);
 
-        if (__grid[place])
-            throw PositionNonemptyEx(x, y);
+        if (__grid[place])throw PositionNonemptyEx(x, y);
 
         __grid[place] = new Advantage(*this, Position(x, y), STARTING_RESOURCE_CAPACITY);
     }
@@ -357,16 +305,16 @@ namespace Gaming
                     surs.array[i] = INACCESSIBLE;
                     i++;
                 }
-                else if(__grid[x*__width+y]== nullptr)
-                {
+                    else if(__grid[x*__width+y]== nullptr)
+                    {
                     surs.array[i] = EMPTY;
                     i++;
-                }
-                else
-                {
+                    }
+                        else
+                        {
                     surs.array[i]=getPiece(x,y)->getType();
                     i++;
-                }
+                        }
             }
         }
         surs.array[4]=SELF;
@@ -383,29 +331,21 @@ namespace Gaming
         x = (from.x - to.x);
         y = (from.y - to.y);
 
-        if(x ==1 && y ==1)
-            return Move = NW;
+        if(x ==1 && y ==1)return Move = NW;
 
-        else if(x ==1 && y ==0)
-            return Move = N;
+        else if(x ==1 && y ==0)return Move = N;
 
-        else if(x ==1 && y ==-1)
-            return Move = NE;
+        else if(x ==1 && y ==-1)return Move = NE;
 
-        else if(x ==0 && y ==-1)
-            return Move = E;
+        else if(x ==0 && y ==-1)return Move = E;
 
-        else if(x ==-1 && y ==-1)
-            return Move = SE;
+        else if(x ==-1 && y ==-1)return Move = SE;
 
-        else if(x ==-1 && y ==0)
-            return Move = S;
+        else if(x ==-1 && y ==0)return Move = S;
 
-        else if(x ==-1 && y ==1)
-            return Move = SW;
+        else if(x ==-1 && y ==1)return Move = SW;
 
-        else if(x ==0 && y ==1)
-            return Move = W;
+        else if(x ==0 && y ==1)return Move = W;
 
         return Move;
     }
@@ -436,7 +376,6 @@ namespace Gaming
 
     const Position Game::move(const Position &pos, const ActionType &ACT) const
     {
-
         Position Pos(pos);
 
         if(ACT == STAY)
@@ -455,8 +394,6 @@ namespace Gaming
         }
 
         return Pos;
-
-
     }
     void Game::round()
     {
@@ -473,14 +410,11 @@ namespace Gaming
         {
             if(__grid[i]!= nullptr && ! __grid[i]->getTurned())
             {
-
                 movePosition = __grid[i]->takeTurn(getSurroundings(__grid[i]->getPosition()));
                 pos = move(__grid[i]->getPosition(), movePosition);
 
                 int place = pos.x * __width + pos.y;
-
                 __grid[i]->setTurned(true);
-
                 if (__grid[place] != nullptr)
                 {
                     __grid[i]->operator*(*(__grid[place]));
@@ -491,22 +425,20 @@ namespace Gaming
                         __grid[place] = __grid[i];
                         __grid[i] = nullptr;
                     }
-                    else if (__grid[place]->isViable())
-                    {
-
-                        delete __grid[place];
+                        else if (__grid[place]->isViable())
+                            {
+                                delete __grid[place];
                         __grid[place] = nullptr;
-
-                    }
-                    else
-                    {
+                             }
+                            else
+                            {
                         delete __grid[place];
                         delete __grid[i];
                         __grid[place]=nullptr;
                         __grid[i]=nullptr;
-                    }
+                             }
                 }
-                else
+                                else
                     __grid[i]->setPosition(pos);
             }
         }
@@ -517,13 +449,11 @@ namespace Gaming
             {
                 if (!__grid[k]->isViable())
                 {
-                    delete __grid[k];
-                    __grid[k] = nullptr;
+                    delete __grid[k];__grid[k] = nullptr;
                 }
                 else
                 {
-                    __grid[k]->setTurned(false);
-                    __grid[k]->age();
+                    __grid[k]->setTurned(false);__grid[k]->age();
                 }
             }
         }
@@ -559,13 +489,10 @@ namespace Gaming
                 }
                 else {
                     os << "[" << *(game.__grid[i * game.__width + j]) << "]";
-                }
-            }
+                }}
             os << std::endl;
         }
-
         os << "Status: " << game.__status << std::endl;
-
         return os;
 
     }
